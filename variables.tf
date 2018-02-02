@@ -48,3 +48,5 @@ variable "alarm_memory_threshold" {
 variable "alarm_actions" {
   type = "list"
 }
+
+variable "source_security_group_id" {}
