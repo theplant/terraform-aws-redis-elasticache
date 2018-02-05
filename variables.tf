@@ -14,8 +14,6 @@ variable "parameter_group" {
   default = "default.redis3.2"
 }
 
-variable "subnet_group" {}
-
 variable "maintenance_window" {}
 
 variable "desired_clusters" {
@@ -34,8 +32,6 @@ variable "automatic_failover_enabled" {
   default = false
 }
 
-variable "notification_topic_arn" {}
-
 variable "alarm_cpu_threshold" {
   default = "75"
 }
@@ -45,8 +41,12 @@ variable "alarm_memory_threshold" {
   default = "10000000"
 }
 
-variable "alarm_actions" {
-  type = "list"
+variable "source_security_group_id" {}
+
+variable "notification_webhook" {}
+
+variable "subnet_ids" {
+    type = "list"
 }
 
-variable "source_security_group_id" {}
+variable "parameter_group_family" {}

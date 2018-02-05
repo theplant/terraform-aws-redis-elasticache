@@ -1,6 +1,28 @@
 #
 # Security group resources
 #
+
+resource "aws_sns_topic" "redis" {
+  name = "${var.project}-${var.environment}"
+}
+
+resource "aws_sns_topic_subscription" "redis" {
+  topic_arn = "${aws_sns_topic.redis.arn}"
+  protocol  = "https"
+  endpoint_auto_confirms = true
+  endpoint  = "${var.notification_webhook}"
+}
+
+resource "aws_elasticache_subnet_group" "redis" {
+  name       = "${var.project}-${var.environment}"
+  subnet_ids = ["${var.subnet_ids}"]
+}
+
+resource "aws_elasticache_parameter_group" "redis" {
+  name   = "${var.project}-${var.environment}"
+  family = "${var.parameter_group_family}"
+}
+
 resource "aws_security_group" "redis" {
   vpc_id = "${var.vpc_id}"
 
@@ -30,11 +52,9 @@ resource "aws_elasticache_replication_group" "redis" {
   number_cache_clusters         = "${var.desired_clusters}"
   node_type                     = "${var.instance_type}"
   engine_version                = "${var.engine_version}"
-  parameter_group_name          = "${var.parameter_group}"
-  subnet_group_name             = "${var.subnet_group}"
   security_group_ids            = ["${aws_security_group.redis.id}"]
   maintenance_window            = "${var.maintenance_window}"
-  notification_topic_arn        = "${var.notification_topic_arn}"
+  notification_topic_arn        = "${aws_sns_topic.redis.arn}"
   port                          = "6379"
 
   tags {
@@ -65,7 +85,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
     CacheClusterId = "${aws_elasticache_replication_group.redis.id}-00${count.index + 1}"
   }
 
-  alarm_actions = ["${var.alarm_actions}"]
+  alarm_actions = ["${aws_sns_topic.redis.arn}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "cache_memory" {
@@ -86,5 +106,5 @@ resource "aws_cloudwatch_metric_alarm" "cache_memory" {
     CacheClusterId = "${aws_elasticache_replication_group.redis.id}-00${count.index + 1}"
   }
 
-  alarm_actions = ["${var.alarm_actions}"]
+  alarm_actions = ["${aws_sns_topic.redis.arn}"]
 }
