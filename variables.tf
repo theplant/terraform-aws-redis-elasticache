@@ -41,12 +41,14 @@ variable "alarm_memory_threshold" {
   default = "10000000"
 }
 
-variable "source_security_group_id" {}
+variable "source_security_group_ids" {
+  type = "list"
+}
 
 variable "notification_webhook" {}
 
 variable "subnet_ids" {
-    type = "list"
+  type = "list"
 }
 
 variable "parameter_group_family" {}
