@@ -7,6 +7,7 @@ resource "aws_sns_topic" "redis" {
 }
 
 resource "aws_sns_topic_subscription" "redis" {
+  count = "${var.notification_webhook != "" ? 1 : 0}"
   topic_arn = "${aws_sns_topic.redis.arn}"
   protocol  = "https"
   endpoint_auto_confirms = true
@@ -84,6 +85,7 @@ resource "aws_cloudwatch_metric_alarm" "cache_cpu" {
   dimensions {
     CacheClusterId = "${aws_elasticache_replication_group.redis.id}-00${count.index + 1}"
   }
+
 
   alarm_actions = ["${aws_sns_topic.redis.arn}"]
 }
