@@ -43,8 +43,6 @@ resource "aws_security_group_rule" "redis" {
   source_security_group_id = "${element(var.source_security_group_ids, count.index)}"
 
   security_group_id = "${aws_security_group.redis.id}"
-
-
 }
 
 #
@@ -63,6 +61,7 @@ resource "aws_elasticache_replication_group" "redis" {
   maintenance_window            = "${var.maintenance_window}"
   notification_topic_arn        = "${aws_sns_topic.redis.arn}"
   port                          = "6379"
+  snapshot_arns                 = "${var.snapshot_arns}"
 
   tags {
     Name        = "CacheReplicationGroup"
