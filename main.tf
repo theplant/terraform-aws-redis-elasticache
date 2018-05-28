@@ -20,6 +20,7 @@ resource "aws_elasticache_subnet_group" "redis" {
 }
 
 resource "aws_elasticache_parameter_group" "redis" {
+  count  = "${length(var.parameter_group) == 0 ? 0 : 1}"
   name   = "${var.project}-${var.environment}"
   family = "${var.parameter_group_family}"
 }
@@ -57,7 +58,7 @@ resource "aws_elasticache_replication_group" "redis" {
   number_cache_clusters         = "${var.desired_clusters}"
   node_type                     = "${var.instance_type}"
   engine_version                = "${var.engine_version}"
-  parameter_group_name          = "${aws_elasticache_parameter_group.redis.name}"
+  parameter_group_name          = "${length(var.parameter_group) == 0 ? var.parameter_group : aws_elasticache_parameter_group.redis.name}"
   subnet_group_name             = "${aws_elasticache_subnet_group.redis.name}"
   security_group_ids            = ["${aws_security_group.redis.id}"]
   maintenance_window            = "${var.maintenance_window}"
