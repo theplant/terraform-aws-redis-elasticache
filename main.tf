@@ -20,7 +20,7 @@ resource "aws_elasticache_subnet_group" "redis" {
 }
 
 resource "aws_elasticache_parameter_group" "redis" {
-  count  = "${length(var.parameter_group) != 0 ? 0 : 1}"
+#  count  = "${length(var.parameter_group) != 0 ? 0 : 1}"
   name   = "${var.project}-${var.environment}"
   family = "${var.parameter_group_family}"
 }
